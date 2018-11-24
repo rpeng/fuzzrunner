@@ -1,0 +1,14 @@
+script-root: "/Users/rpeng/PycharmProjects/fuzzrunner/script"
+commands:
+  - desc: "Connect to cloudera {dc} cluster"
+    script: ["cloudera/connect.sh", "{dc}"]
+    params:
+      dc: ['sjc1', 'sjc1-2']
+
+  - desc: "Login to {dc} environment"
+    script: ["login/connect.sh", "{dc}"]
+    params:
+      dc: ['sjc1', 'sjc1-2']
+
+  - desc: "Connect to mysql"
+    script: ["login/mysql.sh"]
