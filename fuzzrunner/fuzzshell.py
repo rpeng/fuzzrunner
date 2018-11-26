@@ -13,7 +13,7 @@ class FuzzShell:
         self.selected_idx = 0
 
     def draw_loop(self, stdscr):
-        stdscr.clear()
+        stdscr.erase()
         _, screen_width = stdscr.getmaxyx()
         max_desc_len = max([len(c.description) for c in self.results])
         desc_width = min(max(max_desc_len + 2, screen_width // 2), 9999)
@@ -38,6 +38,8 @@ class FuzzShell:
         curses.start_color()
         curses.use_default_colors()
         curses.curs_set(0)
+        stdscr.idcok(False)
+        stdscr.idlok(False)
         while True:
             self.results = self.fuzzrunner.recommend(self.cmd)
             self.selected_idx = min(max(0, self.selected_idx), len(self.results) - 1)

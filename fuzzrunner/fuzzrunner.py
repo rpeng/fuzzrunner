@@ -2,6 +2,7 @@ import os
 from path import Path
 
 import fuzzywuzzy.process
+import fuzzywuzzy.fuzz
 
 from fuzzrunner.command import Command
 
@@ -15,7 +16,8 @@ class FuzzRunner:
     def recommend(self, search_string):
         found_commands = fuzzywuzzy.process.extract(search_string,
                                                     self.command_to_desc,
-                                                    limit=5)
+                                                    limit=5,
+                                                    scorer=fuzzywuzzy.fuzz.token_sort_ratio)
         return [f[2] for f in found_commands]
 
     def run(self, cmd):
