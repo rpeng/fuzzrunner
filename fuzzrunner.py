@@ -91,7 +91,7 @@ class FuzzShell:
         stdscr.clear()
         _, screen_width = stdscr.getmaxyx()
         max_desc_len = max([len(c.description) for c in self.results])
-        desc_width = max_desc_len + 10
+        desc_width = min(max(max_desc_len + 2, screen_width // 2), 9999)
 
         stdscr.addstr(0, 0, "Fuzz Command Query: {}".format(self.cmd))
         stdscr.addstr(2, 0, "Results:")
@@ -101,10 +101,9 @@ class FuzzShell:
                 desc=cmd.description,
                 width=desc_width,
                 script=' '.join(cmd.script))
-
             if len(output_line) > screen_width:
                 output_line = output_line[:screen_width-2]+".."
-            stdscr.addstr(3 + i, 0, output_line)
+            stdscr.addstr(3 + i, 0, output_line, curses.A_BOLD)
         stdscr.refresh()
 
     def get_cmd(self, stdscr):
