@@ -1,4 +1,4 @@
-script-root: "/Users/rpeng/PycharmProjects/fuzzrunner/script"
+script-root: "/Users/rpeng/Development/fuzzrunner/script"
 commands:
   - desc: "Connect to cloudera {dc} cluster"
     script: ["cloudera/connect.sh", "{dc}"]

@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 
-import yaml
-import fuzzywuzzy.process
-import itertools
 import curses
 import curses.ascii
-import subprocess
+import itertools
+import logging
 import os
+import subprocess
+
+import fuzzywuzzy.process
+import yaml
+
 
 class Command:
     def __init__(self, description: str, script: [str], params=None):
@@ -77,6 +80,7 @@ class FuzzRunner:
         path_to_script = os.path.join(self.script_root, cmd.script[0])
         subprocess.run([path_to_script, *cmd.script[1:]])
 
+
 class FuzzShell:
     def __init__(self):
         self.fuzzrunner = FuzzRunner.from_yaml("index.yaml")
@@ -85,10 +89,22 @@ class FuzzShell:
 
     def draw_loop(self, stdscr):
         stdscr.clear()
+        _, screen_width = stdscr.getmaxyx()
+        max_desc_len = max([len(c.description) for c in self.results])
+        desc_width = max_desc_len + 10
+
         stdscr.addstr(0, 0, "Fuzz Command Query: {}".format(self.cmd))
         stdscr.addstr(2, 0, "Results:")
-        for i, command in enumerate(self.results):
-            stdscr.addstr(2 + i, 0, "[{}] {:<64} {}".format(i, command.description, " ".join(command.script)))
+        for i, cmd in enumerate(self.results):
+            output_line = "[{idx}] {desc:<{width}} {script}".format(
+                idx=i,
+                desc=cmd.description,
+                width=desc_width,
+                script=' '.join(cmd.script))
+
+            if len(output_line) > screen_width:
+                output_line = output_line[:screen_width-2]+".."
+            stdscr.addstr(3 + i, 0, output_line)
         stdscr.refresh()
 
     def get_cmd(self, stdscr):
@@ -98,7 +114,11 @@ class FuzzShell:
         while True:
             self.results = self.fuzzrunner.recommend(self.cmd)
             self.draw_loop(stdscr)
-            ch = stdscr.getch()
+
+            try:
+                ch = stdscr.getch()
+            except KeyboardInterrupt:
+                return None
 
             if ch in (curses.KEY_BACKSPACE, curses.ascii.DEL, curses.ascii.BS):
                 self.cmd = self.cmd[:-1]
@@ -109,13 +129,15 @@ class FuzzShell:
                 idx = ch - ord('0')
                 if idx < len(self.results):
                     return self.results[idx]
-            else:
+            elif curses.ascii.isascii(ch):
                 self.cmd += chr(ch)
 
     def run(self):
         cmd = curses.wrapper(self.get_cmd)
-        self.fuzzrunner.run(cmd)
+        if cmd is not None:
+            self.fuzzrunner.run(cmd)
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.ERROR)
     FuzzShell().run()
