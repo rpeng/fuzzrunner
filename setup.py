@@ -4,7 +4,7 @@ setup(
     name='fuzzrunner',
     version='1.0',
     packages=['fuzzrunner'],
-    install_requires=['fuzzywuzzy', 'pyyaml', 'path.py'],
+    install_requires=['fuzzywuzzy', 'pyyaml', 'path.py', 'python-Levenshtein'],
     url='',
     license='GPLv3',
     author='rpeng',
