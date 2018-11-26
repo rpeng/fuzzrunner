@@ -1,5 +1,5 @@
 import os
-import subprocess
+from path import Path
 
 import fuzzywuzzy.process
 
@@ -19,9 +19,13 @@ class FuzzRunner:
         return [f[2] for f in found_commands]
 
     def run(self, cmd):
-        path_to_script = os.path.join(self.script_root, cmd.script[0])
-        completed = subprocess.run([path_to_script, *cmd.script[1:]])
-        return completed.returncode
+        if cmd.script[0].startswith("./"):
+            path_to_script = Path(self.script_root) / cmd.script[0]
+        else:
+            path_to_script = Path(cmd.script[0])
+
+        print("Running:", ' '.join(cmd.script))
+        os.execvp(path_to_script, [path_to_script.name, *cmd.script[1:]])
 
     @classmethod
     def from_settings(cls, settings):

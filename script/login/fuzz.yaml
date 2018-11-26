@@ -1,8 +1,8 @@
 commands:
   - desc: "Login to {dc} environment"
-    script: ["connect.sh", "{dc}"]
+    script: ["./connect.sh", "{dc}"]
     params:
       dc: ['sjc1', 'sjc1-2']
 
   - desc: "Connect to mysql"
-    script: ["mysql.sh"]
+    script: ["./mysql.sh"]

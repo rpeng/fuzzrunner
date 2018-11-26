@@ -16,11 +16,11 @@ def run(config_yaml_path):
     try:
         with open(expanded_path, "r") as yaml_file:
             settings = yaml.load(yaml_file.read())
-            sys.exit(FuzzShell(settings).run())
     except FileNotFoundError:
         logging.error("Cannot find configuration yaml " + expanded_path)
         logging.error("Try running fuzzrunner --index [SCRIPT_ROOT]")
         sys.exit(1)
+    sys.exit(FuzzShell(settings).run())
 
 
 if __name__ == "__main__":

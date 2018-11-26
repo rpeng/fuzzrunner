@@ -1,0 +1,3 @@
+commands:
+    - desc: "Launch python"
+      script: ["python3"]

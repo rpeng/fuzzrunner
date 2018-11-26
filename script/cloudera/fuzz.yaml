@@ -1,5 +1,5 @@
 commands:
   - desc: "Connect to cloudera {dc} cluster"
-    script: ["connect.sh", "{dc}"]
+    script: ["./connect.sh", "{dc}"]
     params:
       dc: ['sjc1', 'sjc1-2']

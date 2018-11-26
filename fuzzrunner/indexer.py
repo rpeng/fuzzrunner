@@ -1,5 +1,3 @@
-import os
-
 import yaml
 from path import Path
 
@@ -9,7 +7,10 @@ FUZZ_YAML_FILE_NAME = "fuzz.yaml"
 
 
 def get_relative_to_root(fuzz_yaml_path, script):
-    return [str(fuzz_yaml_path.parent / script[0]), *script[1:]]
+    if script[0].startswith("./"):
+        return [str("./" + (fuzz_yaml_path.parent / script[0]).normpath()), *script[1:]]
+    else:
+        return script
 
 
 def extract_cmds(fuzz_path):
