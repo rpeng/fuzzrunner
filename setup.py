@@ -1,10 +1,10 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name='fuzzrunner',
     version='1.0',
     packages=['fuzzrunner'],
-    install_requires=['fuzzywuzzy', 'pyyaml'],
+    install_requires=['fuzzywuzzy', 'pyyaml', 'path.py'],
     url='',
     license='GPLv3',
     author='rpeng',

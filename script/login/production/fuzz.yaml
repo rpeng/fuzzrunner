@@ -1,0 +1,3 @@
+commands:
+  - desc: "Get production access token"
+    script: ["auth.sh", "prod"]

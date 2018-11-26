@@ -20,12 +20,15 @@ class FuzzRunner:
 
     def run(self, cmd):
         path_to_script = os.path.join(self.script_root, cmd.script[0])
-        subprocess.run([path_to_script, *cmd.script[1:]])
+        completed = subprocess.run([path_to_script, *cmd.script[1:]])
+        return completed.returncode
 
     @classmethod
     def from_settings(cls, settings):
         all_commands = []
         for cmd in settings['commands']:
-            all_commands.extend(
-                Command(cmd['desc'], cmd['script'], cmd.get('params', None)).expand())
+            if 'params' in cmd:
+                raise RuntimeError("Unexpected parameters in expanded index! Please re-generate index.")
+            all_commands.append(
+                Command(cmd['desc'], cmd['script'], cmd.get('params', None)))
         return cls(settings['script-root'], all_commands)

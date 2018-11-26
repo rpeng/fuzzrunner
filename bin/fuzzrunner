@@ -7,6 +7,7 @@ import sys
 
 import yaml
 
+from fuzzrunner import indexer
 from fuzzrunner.fuzzshell import FuzzShell
 
 
@@ -15,15 +16,22 @@ def run(config_yaml_path):
     try:
         with open(expanded_path, "r") as yaml_file:
             settings = yaml.load(yaml_file.read())
-            FuzzShell(settings).run()
-    except (FileNotFoundError, PermissionError):
-        logging.error("Cannot load configuration yaml " + expanded_path)
+            sys.exit(FuzzShell(settings).run())
+    except FileNotFoundError:
+        logging.error("Cannot find configuration yaml " + expanded_path)
+        logging.error("Try running fuzzrunner --index [SCRIPT_ROOT]")
         sys.exit(1)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.ERROR)
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Executes the fuzzrunner shell")
     parser.add_argument("-c", "--config", help="Path to fuzzconfig yaml file", default="~/.fuzzconfig.yaml")
+    parser.add_argument("--index", metavar="SCRIPT_ROOT",
+                        help="Index SCRIPT_ROOT and extract scripts. Saves result to ~/.fuzzconfig.yaml")
     args = parser.parse_args()
-    run(config_yaml_path=args.config)
+
+    if args.index is not None:
+        indexer.index(args.index)
+    else:
+        run(config_yaml_path=args.config)

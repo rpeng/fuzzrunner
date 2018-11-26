@@ -59,4 +59,5 @@ class FuzzShell:
     def run(self):
         cmd = curses.wrapper(self.get_cmd)
         if cmd is not None:
-            self.fuzzrunner.run(cmd)
+            return self.fuzzrunner.run(cmd)
+        return 1
