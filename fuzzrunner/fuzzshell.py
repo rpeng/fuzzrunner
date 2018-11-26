@@ -5,10 +5,12 @@ from .fuzzrunner import FuzzRunner
 
 
 class FuzzShell:
-    def __init__(self, settings):
+    def __init__(self, settings, digit_confirm=False):
         self.fuzzrunner = FuzzRunner.from_settings(settings)
         self.cmd = ""
         self.results = []
+        self.digit_confirm = digit_confirm
+        self.selected_idx = 0
 
     def draw_loop(self, stdscr):
         stdscr.clear()
@@ -26,7 +28,10 @@ class FuzzShell:
                 script=' '.join(cmd.script))
             if len(output_line) > screen_width:
                 output_line = output_line[:screen_width - 2] + ".."
-            stdscr.addstr(3 + i, 0, output_line, curses.A_BOLD)
+            if i == self.selected_idx:
+                stdscr.addstr(3 + i, 0, output_line, curses.A_UNDERLINE | curses.A_BOLD)
+            else:
+                stdscr.addstr(3 + i, 0, output_line, curses.A_BOLD)
         stdscr.refresh()
 
     def get_cmd(self, stdscr):
@@ -35,6 +40,7 @@ class FuzzShell:
         curses.curs_set(0)
         while True:
             self.results = self.fuzzrunner.recommend(self.cmd)
+            self.selected_idx = min(max(0, self.selected_idx), len(self.results) - 1)
             self.draw_loop(stdscr)
 
             try:
@@ -46,10 +52,14 @@ class FuzzShell:
                 self.cmd = self.cmd[:-1]
             elif ch in (curses.KEY_ENTER, curses.ascii.LF, curses.ascii.NL):
                 if len(self.results) > 0:
-                    return self.results[0]
+                    return self.results[self.selected_idx]
             elif ch in (curses.KEY_EXIT, curses.ascii.ESC):
                 return None
-            elif curses.ascii.isdigit(ch):
+            elif ch == curses.KEY_UP:
+                self.selected_idx -= 1
+            elif ch == curses.KEY_DOWN:
+                self.selected_idx += 1
+            elif curses.ascii.isdigit(ch) and self.digit_confirm:
                 idx = ch - ord('0')
                 if idx < len(self.results):
                     return self.results[idx]
