@@ -23,10 +23,7 @@ def run(config_yaml_path):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.ERROR)
-
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", help="Path to fuzzconfig yaml file", default="~/.fuzzconfig.yaml")
     args = parser.parse_args()
-
-    print("Config path: ", args.config)
     run(config_yaml_path=args.config)

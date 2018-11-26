@@ -47,6 +47,8 @@ class FuzzShell:
             elif ch in (curses.KEY_ENTER, curses.ascii.LF, curses.ascii.NL):
                 if len(self.results) > 0:
                     return self.results[0]
+            elif ch in (curses.KEY_EXIT, curses.ascii.ESC):
+                return None
             elif curses.ascii.isdigit(ch):
                 idx = ch - ord('0')
                 if idx < len(self.results):
