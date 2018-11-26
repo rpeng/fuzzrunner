@@ -1,8 +1,9 @@
 import os
-from path import Path
 
-import fuzzywuzzy.process
 import fuzzywuzzy.fuzz
+import fuzzywuzzy.process
+import ngram
+from path import Path
 
 from fuzzrunner.command import Command
 
@@ -13,11 +14,14 @@ class FuzzRunner:
         self.commands = commands
         self.command_to_desc = dict([(cmd, cmd.description) for cmd in commands])
 
+    def ngram_score(self, s1, s2):
+        return ngram.NGram.compare(s1, s2, N=3)
+
     def recommend(self, search_string):
         found_commands = fuzzywuzzy.process.extract(search_string,
                                                     self.command_to_desc,
                                                     limit=5,
-                                                    scorer=fuzzywuzzy.fuzz.token_sort_ratio)
+                                                    scorer=self.ngram_score)
         return [f[2] for f in found_commands]
 
     def run(self, cmd):

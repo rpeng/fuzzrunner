@@ -1,5 +1,7 @@
+fuzzrunner==1.0
 fuzzywuzzy==0.17.0
 importlib-metadata==0.6
+ngram==3.3.2
 path.py==11.5.0
 python-Levenshtein==0.12.0
 PyYAML==3.13
